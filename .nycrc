@@ -1,0 +1,19 @@
+{
+  "check-coverage": true,
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+  ],
+  "reporter": [
+    "lcov",
+    "text-summary"
+  ],
+  "extension": [
+    ".ts"
+  ],
+  "cache": false,
+  "all": false,
+  "temp-dir": "./.coverage-tmp",
+  "report-dir": "./coverage"
+}

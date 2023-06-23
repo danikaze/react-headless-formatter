@@ -1,0 +1,57 @@
+{
+  "name": "ts-lib-boilerplate",
+  "version": "1.0.0",
+  "description": "A boilerplate to to create npm/libraries based on TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && scripts/build.sh",
+    "dev": "tsc --w --sourceMap",
+    "clean": "rimraf dist",
+    "test": "npm run lint && npm run ut",
+    "lint": "eslint",
+    "ut": "nyc mocha -r ts-node/register -r tsconfig-paths/register tests/**/*.spec.ts",
+    "prettier": "prettier --write 'src/**/*.{ts,tsx}'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier",
+      "pre-push": "npm run test"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danikaze/ts-lib-boilerplate.git"
+  },
+  "private": true,
+  "keywords": [
+    "typescript",
+    "npm",
+    "lib",
+    "boilerplate",
+    "library"
+  ],
+  "author": "danikaze <danikaze@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danikaze/ts-lib-boilerplate/issues"
+  },
+  "homepage": "https://github.com/danikaze/ts-lib-boilerplate#readme",
+  "devDependencies": {
+    "@ef-carbon/tspm": "^2.2.5",
+    "@types/chai": "^4.2.13",
+    "@types/mocha": "^8.0.3",
+    "@typescript-eslint/parser": "^5.45.0",
+    "chai": "^4.3.7",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^7.0.4",
+    "mocha": "^10.1.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.8.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.1",
+    "typescript": "^4.9.3"
+  }
+}
