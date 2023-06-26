@@ -1,5 +1,5 @@
 {
-  "name": "ts-lib-boilerplate",
+  "name": "react-headless-formatter",
   "version": "1.0.0",
   "description": "Transform HTML-like strings into fully rendered React components",
   "main": "index.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danikaze/ts-lib-boilerplate.git"
+    "url": "git+https://github.com/danikaze/react-headless-formatter.git"
   },
   "private": true,
   "keywords": [
@@ -38,9 +38,9 @@
   "author": "danikaze <danikaze@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danikaze/ts-lib-boilerplate/issues"
+    "url": "https://github.com/danikaze/react-headless-formatter/issues"
   },
-  "homepage": "https://github.com/danikaze/ts-lib-boilerplate#readme",
+  "homepage": "https://github.com/danikaze/react-headless-formatter#readme",
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",
     "react-dom": "^16 || ^17 || ^18"
