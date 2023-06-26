@@ -1,5 +1,4 @@
 /node_modules
 /dist
-/coverage
+.coverage
 .coverage-tmp
-.nyc_output
