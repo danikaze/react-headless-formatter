@@ -1,8 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": true
+    "outDir": ".",
+    "target": "es5",
+    "jsx": "react",
+    "module": "ESNext",
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["tests/**/*.ts", "tests/**/*.tsx"]
+  "include": ["src/index.ts"],
+  "exclude": ["src/helpers/**/*", "tests/**/*"]
 }
