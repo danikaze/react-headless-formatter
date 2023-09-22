@@ -1,4 +1,4 @@
-# react-headless-formatter
+# react-markup-formatter
 
 - [Motivation](#motivation)
 - [Usage](#usage)
@@ -15,7 +15,7 @@
 Transform HTML-like strings into fully rendered React components.
 
 ```
-npm install react-headless-formatter
+npm install react-markup-formatter
 ```
 
 For the eagers developer wanting to use this library, just check the [Usage](#usage) section.
@@ -40,7 +40,7 @@ This library doesn't provide a React component per-se, but a **component factory
 
 ```tsx
 // your-app/components/text-format.tsx
-import { createTextFormat } from 'react-headless-formatter';
+import { createTextFormat } from 'react-markup-formatter';
 
 export const TextFormat = createTextFormat({
   tagHandlers: {
@@ -283,18 +283,18 @@ export const MyComponent = () => {
 
 Some times it might need to provide translations mixed with formatting where following a basic approach might require splitting the text in multiple strings like displaying keywords within a text in different colors. And not even then it's a trivial solution, as they could appear anywhere in the text depending of the structure of each language.
 
-This is a perfect use case for `react-headless-formatter`, as those special keywords can defined via tags, and still be provided with plain text in json files. Just provide a tag handler for the special keywords to be rendered with the desired style and then they can be placed anywhere inside the text and translated with any word without having to think on the details.
+This is a perfect use case for `react-markup-formatter`, as those special keywords can defined via tags, and still be provided with plain text in json files. Just provide a tag handler for the special keywords to be rendered with the desired style and then they can be placed anywhere inside the text and translated with any word without having to think on the details.
 
 This example shows how to do exactly this with a custom `<keyword>` tag:
 
 ```json
 // en.json
 {
-  "myTextWithKeywords": "This is some text with special <keyword>keywords</keyword> that could appear <keyword>anywhere</keyword> in the document, but thanks to <keyword>react-headless-formatter</keyword> formatting them is now a trivial problem."
+  "myTextWithKeywords": "This is some text with special <keyword>keywords</keyword> that could appear <keyword>anywhere</keyword> in the document, but thanks to <keyword>react-markup-formatter</keyword> formatting them is now a trivial problem."
 }
 // ja.json
 {
-  "myTextWithKeywords": "これは特別な<keyword>キーワード</keyword>の入ってるテキストです。この<keyword>キーワードー</keyword>が文書のどこでも現れることができますが、<keyword>react-headless-formatter</keyword>のお陰様で、問題がありません。"
+  "myTextWithKeywords": "これは特別な<keyword>キーワード</keyword>の入ってるテキストです。この<keyword>キーワードー</keyword>が文書のどこでも現れることができますが、<keyword>react-markup-formatter</keyword>のお陰様で、問題がありません。"
 }
 ```
 
