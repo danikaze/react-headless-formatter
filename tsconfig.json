@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
     "baseUrl": ".",
     "target": "es2017",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
     "allowJs": false,
-    "module": "commonJS",
+    "module": "ES6",
     "declaration": false,
     "pretty": true,
     "strict": true,
@@ -14,7 +14,7 @@
     "lib": ["dom", "es2017"],
     "paths": {
       "@src": ["src"],
-      "@src/*": ["src/*"],
+      "@src/*": ["src/*"]
     },
     "plugins": [
       {
@@ -27,5 +27,5 @@
       }
     ]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
 }
