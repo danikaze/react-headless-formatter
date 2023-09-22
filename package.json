@@ -1,5 +1,5 @@
 {
-  "name": "react-headless-formatter",
+  "name": "react-markup-formatter",
   "version": "1.0.0",
   "description": "Render HTML-like markup language from strings using React components",
   "main": "index.js",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danikaze/react-headless-formatter.git"
+    "url": "git+https://github.com/danikaze/react-markup-formatter.git"
   },
   "keywords": [
     "typescript",
@@ -30,6 +30,9 @@
     "library",
     "react",
     "html",
+    "hypertext",
+    "markup",
+    "headless",
     "parser",
     "tokenizer",
     "render",
@@ -50,9 +53,9 @@
   "author": "danikaze <danikaze@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danikaze/react-headless-formatter/issues"
+    "url": "https://github.com/danikaze/react-markup-formatter/issues"
   },
-  "homepage": "https://github.com/danikaze/react-headless-formatter#readme",
+  "homepage": "https://github.com/danikaze/react-markup-formatter#readme",
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
