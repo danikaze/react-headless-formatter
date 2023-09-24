@@ -1,6 +1,6 @@
 {
   "name": "react-markup-formatter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Render HTML-like markup language from strings using React components",
   "main": "index.js",
   "scripts": {
