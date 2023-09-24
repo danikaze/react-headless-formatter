@@ -6,11 +6,13 @@
   - [Types](#types)
   - [Configuration and Options](#configuration-and-options)
   - [Example of Formatting Handlers](#example-of-formatting-handlers)
+  - [Accessing further React hooks from the handlers](#accessing-further-react-hooks-from-the-handlers)
 - [Use Cases](#use-cases)
   - [Support a subset of tags](#support-a-subset-of-tags)
   - [Provide extended custom tags](#provide-extended-custom-tags)
   - [i18n formatted localizations](#i18n-formatted-localizations)
   - [Support Full HTML](#support-full-html)
+- [Changelog](#changelog)
 
 Transform HTML-like strings into fully rendered React components.
 
@@ -118,6 +120,7 @@ When calling `createTextFormat` you need to specify how the formatting should be
 | `tagHandlers`       | `Record<string, FormatTagHandler>` | `undefined` | Mapping between the tags and the handlers to format them. Tag names are case-insensitive.                                                                                                                                                                                 |
 | `defaultTagHandler` | `FormatTagHandler`                 | `undefined` | When provided it allows for custom handling of the tags **not** defined in `tagHandlers`.                                                                                                                                                                                 |
 | `keepUnknownTags`   | `Boolean`                          | `false`     | When `true` it renders the received text for a tag not defined in `tagHandlers`. Only applies if `defaultTagHandler` is `undefined`. When this is `false` or `undefined` and `defaultTagHandler` is `undefined`, _unregistered_ tags are removed from the formatted text. |
+| `hooks`             | `() => any[]`                      | `undefined` | If the handlers require calling hooks, their calls need to be defined here to avoid altering the hooks invariant rules of React. See more about the usage on the examples below.                                                                                          |
 
 ### Example of Formatting Handlers
 
@@ -191,6 +194,29 @@ const tagHandlers = {
   },
 };
 ```
+
+### Accessing further React hooks from the handlers
+
+Calling a hook from a tag handler is forbidden as the rendering result is memoized which will result in a variable number of hooks call between different renders, triggering an invariant error.
+
+If further calls to other hooks are needed in each render, it can be achieved by the `hooks` option when creating the text formater.
+
+Let's suppose that a value returned by some hook is required to be displayed. In this example the value will be a simple counter, but it can be a text translation based on some variable tag attribute or any other complex case that could appear.
+
+```tsx
+// the hooks function will be called in every render to maintain a constant
+// number of hooks calls
+const hooks = () => [useCounter()];
+const tagHandlers = {
+  // the 3rd parameter of every tag handler will be populated with the result
+  // of the provided hooks function
+  counter: (index, tagData, [counter]) => <span key={index}>{counter}</span>,
+};
+
+const TextFormat = createTextFormat({ tagHandlers, hooks });
+```
+
+Note that the list of results provided by `hooks()` will be used in the dependency array when memoizing the formatting results, so avoid returning new objects every time if the values are the same, as it would result on a re-calculation of the resulting JSX elements and therefore will slightly affect the performance of your application (even if it's a minimum impact).
 
 ## Use Cases
 
@@ -361,3 +387,14 @@ const text =
 ```
 
 Note that this is just a simple example and even if it takes care of the styles transformations, probably are other cases that needs to be handled (maybe `HtmlToReact` can be provided in a future version as an exported component by this library, **PR**s are welcomed!)
+
+## Changelog
+
+### v1.1.0
+
+- Added the `hooks` option in `CreateTextFormatConfig`
+  - TypeScript (via generics) will detect if the 3rd parameter with the returned values is available in the `FormatTextHandler` and `FormatTagHandler` callbacks based on the provided options when calling `createTextFormat`.
+
+### v1.0.0
+
+- First release.

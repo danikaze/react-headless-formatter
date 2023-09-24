@@ -2,13 +2,14 @@ import { createElement, Fragment } from 'react';
 import { FormatTextHandler, FormatTagHandler, TagData } from '..';
 import { Tokenizer, TagToken, Token } from './tokenizer';
 
-export function format(
-  plainText: FormatTextHandler,
-  tags: Record<string, FormatTagHandler>,
-  defaultTag: FormatTagHandler | undefined,
+export function format<H extends any[]>(
+  plainText: FormatTextHandler<H>,
+  tags: Record<string, FormatTagHandler<H>>,
+  defaultTag: FormatTagHandler<H> | undefined,
   keepUnknownTags: boolean,
   tokens: Token | Token[],
-  index: number
+  index: number,
+  hooks: H | undefined
 ): JSX.Element | null {
   if (!Array.isArray(tokens)) {
     return formatToken(
@@ -17,31 +18,33 @@ export function format(
       defaultTag,
       keepUnknownTags,
       tokens,
-      index
+      index,
+      hooks
     );
   }
 
   const elems = tokens.map((token, index) =>
-    format(plainText, tags, defaultTag, keepUnknownTags, token, index)
+    format(plainText, tags, defaultTag, keepUnknownTags, token, index, hooks)
   );
   return createElement(Fragment, { key: index }, elems);
 }
 
-function formatToken(
-  plainText: FormatTextHandler,
-  tags: Record<string, FormatTagHandler>,
-  defaultTag: FormatTagHandler | undefined,
+function formatToken<H extends any[]>(
+  plainText: FormatTextHandler<H>,
+  tags: Record<string, FormatTagHandler<H>>,
+  defaultTag: FormatTagHandler<H> | undefined,
   keepUnknownTags: boolean,
   token: Token,
-  index: number
+  index: number,
+  hooks: H | undefined
 ): JSX.Element | null {
   let elem: React.ReactNode;
   if (Tokenizer.isTextToken(token)) {
-    elem = plainText(index, token);
+    elem = plainText(index, token, hooks!);
   } else {
     const handler = tags[token.tag];
     const elems = token.children.map((child, index) =>
-      format(plainText, tags, defaultTag, keepUnknownTags, child, index)
+      format(plainText, tags, defaultTag, keepUnknownTags, child, index, hooks)
     );
 
     const tagData: TagData = {
@@ -50,9 +53,9 @@ function formatToken(
       attrs: token.attrs,
     };
     if (handler) {
-      return handler(index, tagData);
+      return handler(index, tagData, hooks!);
     } else if (defaultTag) {
-      return defaultTag(index, tagData);
+      return defaultTag(index, tagData, hooks!);
     }
 
     return keepUnknownTags

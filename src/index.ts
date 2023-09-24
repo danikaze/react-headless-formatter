@@ -8,22 +8,20 @@ import { format } from './helpers/format';
  * Note that it stills need to specify `key={index}` as it might be called
  * as part of another tag content together with other children.
  */
-export type FormatTextHandler = (
-  index: number,
-  text?: string
-) => JSX.Element | null;
+export type FormatTextHandler<H extends any[] = never> = [H] extends [never]
+  ? (index: number, text: string | undefined) => JSX.Element | null
+  : (index: number, text: string | undefined, hooks: H) => JSX.Element | null;
 /**
  * Definition of a handler to render styled text
  *
  * Note that `key={index}` is needed because they might be rendered
  * together with other children as part of another tag content
  */
-export type FormatTagHandler = (
-  index: number,
-  tag: TagData
-) => JSX.Element | null;
+export type FormatTagHandler<H extends any[] = never> = [H] extends [never]
+  ? (index: number, tag: TagData) => JSX.Element | null
+  : (index: number, tag: TagData, hooks: H) => JSX.Element | null;
 
-export interface CreateTextFormatConfig {
+export type CreateTextFormatConfig<HooksReturnType extends any[] = never> = {
   /**
    * This defines how the unformatted text will be rendered.
    * This applies to the top level without tags and every leaf node.
@@ -33,21 +31,29 @@ export interface CreateTextFormatConfig {
    *
    * Returns the text at it is by default
    */
-  textHandler?: FormatTextHandler;
+  textHandler?: FormatTextHandler<HooksReturnType>;
   /**
    * List of tags to handle (and how they are rendered).
    */
-  tagHandlers?: Record<string, FormatTagHandler>;
+  tagHandlers?: Record<string, FormatTagHandler<HooksReturnType>>;
   /**
    * Tag Handle to use if not found in `tagHandlers`
    */
-  defaultTagHandler?: FormatTagHandler;
+  defaultTagHandler?: FormatTagHandler<HooksReturnType>;
   /**
    * When `true`, if a tag is not supported it will be output as it is.
    * By default (`false`) it will be removed as it was not provided.
    */
   keepUnknownTags?: boolean;
-}
+} & ([HooksReturnType] extends [never]
+  ? object
+  : {
+      /**
+       * Extra hooks to call on every render, with the resulting data being passed
+       * as an extra parameter to text and tag handlers.
+       */
+      hooks: () => HooksReturnType;
+    });
 
 export interface TagData {
   name: string;
@@ -65,16 +71,19 @@ export interface Props {
  * native React components.
  * Think about it as a controlled/styled HTML-like tags.
  */
-export function createTextFormat(
-  config: CreateTextFormatConfig
+export function createTextFormat<H extends any[] = never>(
+  config: CreateTextFormatConfig<H>
 ): React.FC<Props> {
   const keepUnknownTags = Boolean(config.keepUnknownTags);
-  const textHandler: FormatTextHandler =
+  const textHandler: FormatTextHandler<H> =
     config.textHandler ??
-    ((index, text) => createElement(Fragment, { key: index }, text));
-  const uppercasedTagHandlers = transformTagHandlers(config.tagHandlers);
+    ((index: number, text?: string) =>
+      createElement(Fragment, { key: index }, text));
+  const uppercasedTagHandlers = transformTagHandlers<H>(config);
+  const getHooks = (config as CreateTextFormatConfig<[]>).hooks;
 
   const TextFormat: React.FC<Props> = (props) => {
+    const hooks = getHooks?.() as unknown as H;
     // parsing text *might* be considered a heavy operation so we cache it
     // `props.children` is used to make sure it depends on the value, not the
     // props object which can change by mistake depending on how the component
@@ -88,9 +97,10 @@ export function createTextFormat(
         config.defaultTagHandler,
         keepUnknownTags,
         tokens,
-        0
+        0,
+        hooks
       );
-    }, [props.children]);
+    }, [props.children, ...(hooks || [])]);
 
     return formattedText;
   };
@@ -102,13 +112,21 @@ export function createTextFormat(
  * Dummy-proof function to ensure that all the tag names are
  * provided in uppercase
  */
-function transformTagHandlers(
-  tags: CreateTextFormatConfig['tagHandlers']
-): Exclude<CreateTextFormatConfig['tagHandlers'], undefined> {
-  if (!tags) return {};
+function transformTagHandlers<H extends any[]>(
+  config: CreateTextFormatConfig<H>
+): Exclude<CreateTextFormatConfig<H>['tagHandlers'], undefined> {
+  type TagHandlers = Exclude<
+    CreateTextFormatConfig<H>['tagHandlers'],
+    undefined
+  >;
 
-  return Object.entries(tags).reduce((acc, [tag, handler]) => {
-    acc[tag.toUpperCase()] = handler;
+  if (!config.tagHandlers) {
+    return {} as TagHandlers;
+  }
+
+  return Object.entries(config.tagHandlers).reduce((acc, [tag, handler]) => {
+    acc[tag.toUpperCase() as keyof TagHandlers] =
+      handler as TagHandlers[keyof TagHandlers];
     return acc;
-  }, {} as Exclude<CreateTextFormatConfig['tagHandlers'], undefined>);
+  }, {} as TagHandlers);
 }

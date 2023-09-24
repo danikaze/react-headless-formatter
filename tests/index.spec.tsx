@@ -10,6 +10,11 @@ interface TestOptions {
 
 describe(createTextFormat.name, () => {
   let testId = 0;
+  let counter = 0;
+
+  beforeEach(() => {
+    counter = 0;
+  });
 
   async function test({
     Formatter,
@@ -27,6 +32,10 @@ describe(createTextFormat.name, () => {
     const elem = await findByTestId(TEST_ID);
     const html = elem.innerHTML;
     expect(html).toBe(expectedHtml);
+  }
+
+  function useCounter() {
+    return ++counter;
   }
 
   const BasicTextFormat = (() => {
@@ -142,6 +151,17 @@ describe(createTextFormat.name, () => {
       return createElement(name.toLowerCase(), attrs, children);
     };
     return createTextFormat({ defaultTagHandler: htmlHandler });
+  })();
+
+  const TextFormatWithHooks = (() => {
+    return createTextFormat({
+      tagHandlers: {
+        count: (index, data, [counter]) => (
+          <Fragment key={index}>{counter}</Fragment>
+        ),
+      },
+      hooks: () => [useCounter()],
+    });
   })();
 
   it('should not fail if used with no children', async () => {
@@ -288,5 +308,15 @@ describe(createTextFormat.name, () => {
       text: html,
       expectedHtml: html,
     });
+  });
+
+  it('should work with extra hooks', async () => {
+    for (let i = 1; i < 5; i++) {
+      await test({
+        Formatter: TextFormatWithHooks,
+        text: 'Count: <count/>',
+        expectedHtml: `Count: ${i}`,
+      });
+    }
   });
 });
